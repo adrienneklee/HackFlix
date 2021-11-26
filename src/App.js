@@ -1,25 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+// NPM Modules
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+// Components
+import Catalogue from './components/Catalogue'
+import MovieDetails from './components/MovieDetails'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+  const [ movies, setMovies ] = useState([])
+
+  useEffect(() => {
+    axios({
+      url: "https://api.themoviedb.org/3/discover/movie",
+      params: {
+        api_key: '1ddda46df655145abd5e7b35368e7a4b',
+        language: 'en-US',
+        sort_by: 'popularity.desc',
+        include_adult: 'false',
+        include_video: 'false',
+        page: 1,
+        primary_release_year: 2000,
+      }
+    }).then((response) => {
+      setMovies(response.data.results)
+    })
+  }, [])
+
+  return(
+    <BrowserRouter>
+      <div className="wrapper">
+        <header>
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <h1>HackFlix</h1>
+          </Link>
+        </header>
+        
+        <Routes>
+          <Route path="/" element={<Catalogue movies={movies}/>}/>
+          <Route path="movie/:movieID" element= {<MovieDetails />}/>
+        </Routes>
+        
+      </div>
+    </BrowserRouter>
+   
+  )
 }
 
-export default App;
+export default App
